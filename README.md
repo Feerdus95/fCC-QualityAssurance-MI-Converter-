@@ -40,7 +40,7 @@ A robust web application that seamlessly converts between metric and imperial un
 3. Create a `.env` file (optional):
    ```env
    PORT=3000
-   NODE_ENV=development
+   NODE_ENV=test
    ```
 
 ## 💻 Usage
