@@ -27,13 +27,19 @@ function ConvertHandler() {
     if (!/[\d/.]/.test(input)) return 1;
     
     try {
-      const numStr = input.match(/^[\d/.]+/)[0];
+      const numStr = input.match(/^[\d/.]+/)?.[0];
+      if (!numStr) return 1;
       if ((numStr.match(/\//g) || []).length > 1) return 'invalid number';
       
-      const result = numStr.includes('/') 
-        ? numStr.split('/').reduce((num, denom) => parseFloat(num) / parseFloat(denom))
-        : parseFloat(numStr);
+      const parts = numStr.split('/');
+      if (parts.length === 2) {
+        const num = parseFloat(parts[0]);
+        const denom = parseFloat(parts[1]);
+        if (isNaN(num) || isNaN(denom) || denom === 0) return 'invalid number';
+        return Number((num / denom).toFixed(5));
+      }
       
+      const result = parseFloat(numStr);
       return isNaN(result) ? 'invalid number' : result;
     } catch (e) {
       return 'invalid number';
