@@ -1,5 +1,5 @@
 {
-  "name": "metric-imperial-converter",
+  "name": "fcc-qualityassurance-mi-converter",
   "version": "1.0.0",
   "description": "A metric to imperial unit converter for freeCodeCamp's Quality Assurance certification",
   "main": "server.js",
