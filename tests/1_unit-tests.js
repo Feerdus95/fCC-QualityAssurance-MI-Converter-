@@ -4,9 +4,6 @@ const ConvertHandler = require('../controllers/convertHandler.js');
 
 let convertHandler = new ConvertHandler();
 
-const suite = require('mocha').suite;
-const test = require('mocha').test;
-
 suite('Unit Tests', function() {
   suite('Function convertHandler.getNum(input)', function() {
     test('Whole number input', function(done) {
