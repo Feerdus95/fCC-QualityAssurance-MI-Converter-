@@ -3,6 +3,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
+const path = require('path');
 require('dotenv').config();
 
 const apiRoutes = require('./routes/api.js');
@@ -10,13 +11,13 @@ const fccTestingRoutes = require('./routes/fcctesting.js');
 
 const app = express();
 
-app.use('/public', express.static(process.cwd() + '/public'));
+app.use('/public', express.static(path.join(__dirname, 'public')));
 app.use(cors({ origin: '*' }));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.route('/').get(function (req, res) {
-  res.sendFile(process.cwd() + '/public/index.html');
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
 // Only include testing routes in development
