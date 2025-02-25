@@ -56,10 +56,7 @@ function ConvertHandler() {
   };
   
   this.convert = function(initNum, initUnit) {
-    if (initNum === 'invalid number' && initUnit === 'invalid unit') {
-      return 'invalid number and unit';
-    }
-    if (initNum === 'invalid number') {
+    if (initNum === 'invalid number' || !initNum) {
       return 'invalid number';
     }
     if (!isValidUnit(initUnit)) {
@@ -69,12 +66,18 @@ function ConvertHandler() {
     const unit = initUnit === 'L' ? 'L' : initUnit.toLowerCase();
     const conversion = conversionRates[unit];
     const result = initNum * conversion.rate;
-    return Math.round(result * 100000) / 100000;
+    return Number(result.toFixed(5));
   };
   
   this.getString = function(initNum, initUnit, returnNum, returnUnit) {
-    if (initNum === 'invalid number' || initUnit === 'invalid unit') {
+    if (initNum === 'invalid number' && initUnit === 'invalid unit') {
       return 'invalid number and unit';
+    }
+    if (initNum === 'invalid number') {
+      return 'invalid number';
+    }
+    if (initUnit === 'invalid unit') {
+      return 'invalid unit';
     }
     
     return `${initNum} ${this.spellOutUnit(initUnit)} converts to ${returnNum} ${this.spellOutUnit(returnUnit)}`;

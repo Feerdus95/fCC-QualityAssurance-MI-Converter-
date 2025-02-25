@@ -38,7 +38,8 @@ app.use(function(req, res, next) {
 if (process.env.NODE_ENV !== 'production') {
   const runner = require('./test-runner');
   const port = process.env.PORT || 3000;
-  app.listen(port, function () {
+  
+  const server = app.listen(port, function () {
     console.log('Listening on port ' + port);
     if (process.env.NODE_ENV === 'test') {
       console.log('Running Tests...');
@@ -48,7 +49,26 @@ if (process.env.NODE_ENV !== 'production') {
         } catch (error) {
           console.log('Tests are not valid:', error);
         }
+        server.close(); // Close the server after tests
       }, 1500);
+    }
+  });
+
+  // Handle server errors
+  server.on('error', function(error) {
+    if (error.code === 'EADDRINUSE') {
+      console.log(`Port ${port} is already in use. Tests will continue...`);
+      if (process.env.NODE_ENV === 'test') {
+        setTimeout(function() {
+          try {
+            runner.run();
+          } catch (error) {
+            console.log('Tests are not valid:', error);
+          }
+        }, 1500);
+      }
+    } else {
+      console.error('Server error:', error);
     }
   });
 } else {
