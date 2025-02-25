@@ -31,18 +31,21 @@ app.use(function(req, res, next) {
 
 const port = process.env.PORT || 3000;
 
-app.listen(port, function () {
-  console.log('Listening on port ' + port);
-  if (process.env.NODE_ENV === 'test') {
-    console.log('Running Tests...');
-    setTimeout(function () {
-      try {
-        runner.run();
-      } catch (error) {
-        console.log('Tests are not valid:', error);
-      }
-    }, 1500);
-  }
-});
+// Only start the server if we're not in a serverless environment
+if (process.env.NODE_ENV !== 'production') {
+  app.listen(port, function () {
+    console.log('Listening on port ' + port);
+    if (process.env.NODE_ENV === 'test') {
+      console.log('Running Tests...');
+      setTimeout(function () {
+        try {
+          runner.run();
+        } catch (error) {
+          console.log('Tests are not valid:', error);
+        }
+      }, 1500);
+    }
+  });
+}
 
 module.exports = app;
