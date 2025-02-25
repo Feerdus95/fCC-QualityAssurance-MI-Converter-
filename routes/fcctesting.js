@@ -2,6 +2,7 @@
 
 const cors = require('cors');
 const fs = require('fs');
+const path = require('path');
 
 module.exports = function (app) {
   // In production, all testing routes should return unavailable

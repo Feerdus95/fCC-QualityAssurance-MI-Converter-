@@ -49,7 +49,6 @@ if (process.env.NODE_ENV !== 'production') {
         } catch (error) {
           console.log('Tests are not valid:', error);
         }
-        server.close(); // Close the server after tests
       }, 1500);
     }
   });
