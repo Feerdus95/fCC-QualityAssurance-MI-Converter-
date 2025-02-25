@@ -28,8 +28,8 @@ A robust web application that seamlessly converts between metric and imperial un
 
 1. Clone this repository:
    ```bash
-   git clone https://github.com/Feerdus95/fCC-QualityAssurance-MI-Converter.git
-   cd fCC-QualityAssurance-MI-Converter
+   git clone https://github.com/Feerdus95/fCC-QualityAssurance.git
+   cd fCC-QualityAssurance
    ```
 
 2. Install dependencies:
