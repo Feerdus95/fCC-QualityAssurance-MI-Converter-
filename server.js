@@ -19,7 +19,12 @@ app.route('/').get(function (req, res) {
   res.sendFile(process.cwd() + '/views/index.html');
 });
 
-fccTestingRoutes(app);
+// Only include testing routes in development
+if (process.env.NODE_ENV !== 'production') {
+  fccTestingRoutes(app);
+}
+
+// Always include API routes
 apiRoutes(app);
 
 app.use(function(req, res, next) {
@@ -44,6 +49,12 @@ if (process.env.NODE_ENV !== 'production') {
         }
       }, 1500);
     }
+  });
+} else {
+  // In production, just export the app for serverless deployment
+  const port = process.env.PORT || 3000;
+  app.listen(port, function () {
+    console.log('Production server listening on port ' + port);
   });
 }
 

@@ -4,6 +4,18 @@ const cors = require('cors');
 const fs = require('fs');
 
 module.exports = function (app) {
+  // In production, all testing routes should return unavailable
+  if (process.env.NODE_ENV === 'production') {
+    app.get('/_api/get-tests', cors(), function(req, res) {
+      res.json({status: 'unavailable'});
+    });
+    app.get('/_api/app-info', function(req, res) {
+      res.json({status: 'unavailable'});
+    });
+    return;
+  }
+
+  // Development routes below
   app.route('/_api/server.js')
     .get(function(req, res, next) {
       console.log('requested');
@@ -23,10 +35,6 @@ module.exports = function (app) {
     
   let error;
   app.get('/_api/get-tests', cors(), function(req, res, next){
-    if (process.env.NODE_ENV === 'production') {
-      return res.json({status: 'unavailable'});
-    }
-    console.log(error);
     if(!error && process.env.NODE_ENV === 'test') return next();
     res.json({status: 'unavailable'});
   },
@@ -41,6 +49,7 @@ module.exports = function (app) {
       process.nextTick(() =>  res.json(testFilter(runner.report, req.query.type, req.query.n)));
     });
   });
+
   app.get('/_api/app-info', function(req, res) {
     let hs = Object.keys(res._headers)
       .filter(h => !h.match(/^access-control-\w+/))

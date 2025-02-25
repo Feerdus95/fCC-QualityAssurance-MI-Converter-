@@ -6,7 +6,10 @@ const Mocha = require('mocha');
 const fs = require('fs');
 const path = require('path');
 
-const mocha = new Mocha({ timeout: 5000 });
+const mocha = new Mocha({ 
+    timeout: 5000,
+    ui: 'tdd'
+});
 const testDir = './tests';
 
 let emitter = new EventEmitter();
