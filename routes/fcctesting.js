@@ -2,7 +2,6 @@
 
 const cors = require('cors');
 const fs = require('fs');
-const runner = require('../test-runner');
 
 module.exports = function (app) {
   app.route('/_api/server.js')
@@ -24,15 +23,20 @@ module.exports = function (app) {
     
   let error;
   app.get('/_api/get-tests', cors(), function(req, res, next){
+    if (process.env.NODE_ENV === 'production') {
+      return res.json({status: 'unavailable'});
+    }
     console.log(error);
     if(!error && process.env.NODE_ENV === 'test') return next();
     res.json({status: 'unavailable'});
   },
   function(req, res, next){
+    const runner = require('../test-runner');
     if(!runner.report) return next();
     res.json(testFilter(runner.report, req.query.type, req.query.n));
   },
   function(req, res){
+    const runner = require('../test-runner');
     runner.on('done', function(report){
       process.nextTick(() =>  res.json(testFilter(runner.report, req.query.type, req.query.n)));
     });
@@ -50,7 +54,6 @@ module.exports = function (app) {
     delete res._headers['strict-transport-security'];
     res.json({headers: hObj});
   });
-  
 };
 
 function testFilter(tests, type, n) {

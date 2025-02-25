@@ -7,7 +7,6 @@ require('dotenv').config();
 
 const apiRoutes = require('./routes/api.js');
 const fccTestingRoutes = require('./routes/fcctesting.js');
-const runner = require('./test-runner');
 
 const app = express();
 
@@ -29,10 +28,10 @@ app.use(function(req, res, next) {
     .send('Not Found');
 });
 
-const port = process.env.PORT || 3000;
-
-// Only start the server if we're not in a serverless environment
+// For development and testing
 if (process.env.NODE_ENV !== 'production') {
+  const runner = require('./test-runner');
+  const port = process.env.PORT || 3000;
   app.listen(port, function () {
     console.log('Listening on port ' + port);
     if (process.env.NODE_ENV === 'test') {
@@ -48,4 +47,5 @@ if (process.env.NODE_ENV !== 'production') {
   });
 }
 
+// Export the app instance for serverless deployment
 module.exports = app;

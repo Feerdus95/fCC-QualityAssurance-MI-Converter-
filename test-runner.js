@@ -1,29 +1,39 @@
+'use strict';
+
 const analyser = require('./assertion-analyser');
 const EventEmitter = require('events').EventEmitter;
-
-const Mocha = require('mocha'),
-    fs = require('fs'),
-    path = require('path');
+const Mocha = require('mocha');
+const fs = require('fs');
+const path = require('path');
 
 const mocha = new Mocha({ timeout: 5000 });
 const testDir = './tests';
-
-// Add each .js file to the mocha instance
-fs.readdirSync(testDir).filter(function(file) {
-    // Only keep the .js files
-    return file.substr(-3) === '.js';
-}).forEach(function(file) {
-    mocha.addFile(
-        path.join(testDir, file)
-    );
-});
 
 let emitter = new EventEmitter();
 emitter.run = function() {
     let tests = [];
     let context = "";
     let separator = ' -> ';
-    // Run the tests.
+
+    // Check if tests directory exists
+    if (!fs.existsSync(testDir)) {
+        console.log('Tests directory not found - skipping tests');
+        emitter.report = tests;
+        emitter.emit('done', tests);
+        return;
+    }
+
+    // Add each .js file to the mocha instance
+    fs.readdirSync(testDir).filter(function(file) {
+        // Only keep the .js files
+        return file.substr(-3) === '.js';
+    }).forEach(function(file) {
+        mocha.addFile(
+            path.join(testDir, file)
+        );
+    });
+
+    // Run the tests
     try {
         let runner = mocha.run()
             .on('test end', function(test) {
@@ -35,7 +45,6 @@ emitter.run = function() {
                     title: test.title,
                     context: context.slice(0, -separator.length),
                     state: test.state,
-                    // body: body,
                     assertions: analyser(body)
                 };
                 tests.push(obj);
@@ -51,7 +60,9 @@ emitter.run = function() {
                 context = context.slice(0, -(s.title.length + separator.length))
             })
     } catch(e) {
-        throw(e);
+        console.log('Error running tests:', e);
+        emitter.report = tests;
+        emitter.emit('done', tests);
     }
 };
 
