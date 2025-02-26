@@ -4,7 +4,7 @@ function ConvertHandler() {
     let result;
     
     if (!input) {
-      result = null;
+      result = 1;
     } else {
       const numStr = input.match(/[^a-zA-Z]+/)?.[0];
       if (!numStr) {
@@ -40,8 +40,10 @@ function ConvertHandler() {
         result = null;
       } else {
         const validUnits = ['gal', 'l', 'mi', 'km', 'lbs', 'kg'];
-        const normalizedUnit = unit === 'l' ? 'L' : unit.toLowerCase();
-        result = validUnits.includes(unit.toLowerCase()) ? normalizedUnit : null;
+        result = validUnits.includes(unit.toLowerCase()) ? unit.toLowerCase() : null;
+        if (result === 'l') {
+          result = 'L';
+        }
       }
     }
     
@@ -69,8 +71,6 @@ function ConvertHandler() {
   };
 
   this.spellOutUnit = function(unit) {
-    let result;
-    
     const unitNames = {
       'gal': 'gallons',
       'L': 'liters',
@@ -79,9 +79,7 @@ function ConvertHandler() {
       'lbs': 'pounds',
       'kg': 'kilograms'
     };
-    
-    result = unitNames[unit];
-    return result;
+    return unitNames[unit];
   };
   
   this.convert = function(initNum, initUnit) {
