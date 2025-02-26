@@ -9,26 +9,26 @@ module.exports = function (app) {
   app.route('/api/convert').get(function (req, res) {
     const input = req.query.input;
     if (!input) {
-      return res.status(400).send({ error: 'invalid input' });
+      return res.status(400).send('invalid input');
     }
-
+  
     const initNum = convertHandler.getNum(input);
     const initUnit = convertHandler.getUnit(input);
-
+  
     if (initNum === null && initUnit === null) {
-      return res.status(400).send({ error: 'invalid number and unit' });
+      return res.status(200).send('invalid number and unit');
     }
     if (initNum === null) {
-      return res.status(400).send({ error: 'invalid number' });
+      return res.status(200).send('invalid number');
     }
     if (initUnit === null) {
-      return res.status(400).send({ error: 'invalid unit' });
+      return res.status(200).send('invalid unit');
     }
-
+  
     const returnNum = convertHandler.convert(initNum, initUnit);
     const returnUnit = convertHandler.getReturnUnit(initUnit);
     const string = convertHandler.getString(initNum, initUnit, returnNum, returnUnit);
-
+  
     res.json({
       initNum,
       initUnit,
