@@ -1,82 +1,59 @@
 'use strict';
 
-const express = require('express');
-const bodyParser = require('body-parser');
-const cors = require('cors');
-const path = require('path');
+const express     = require('express');
+const bodyParser  = require('body-parser');
+const expect      = require('chai').expect;
+const cors        = require('cors');
 require('dotenv').config();
 
-const apiRoutes = require('./routes/api.js');
-const fccTestingRoutes = require('./routes/fcctesting.js');
+const apiRoutes         = require('./routes/api.js');
+const fccTestingRoutes  = require('./routes/fcctesting.js');
+const runner            = require('./test-runner');
 
-const app = express();
+let app = express();
 
-app.use('/public', express.static(path.join(__dirname, 'public')));
-app.use(cors({ origin: '*' }));
+app.use('/public', express.static(process.cwd() + '/public'));
+
+app.use(cors({origin: '*'})); //For FCC testing purposes only
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-app.route('/').get(function (req, res) {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
-});
+//Index page (static HTML)
+app.route('/')
+  .get(function (req, res) {
+    res.sendFile(process.cwd() + '/views/index.html');
+  });
 
-// Only include testing routes in development
-if (process.env.NODE_ENV !== 'production') {
-  fccTestingRoutes(app);
-}
+//For FCC testing purposes
+fccTestingRoutes(app);
 
-// Always include API routes
-apiRoutes(app);
-
+//Routing for API 
+apiRoutes(app);  
+    
+//404 Not Found Middleware
 app.use(function(req, res, next) {
   res.status(404)
     .type('text')
     .send('Not Found');
 });
 
-// For development and testing
-if (process.env.NODE_ENV !== 'production') {
-  const runner = require('./test-runner');
-  const port = process.env.PORT || 3000;
-  
-  const server = app.listen(port, function () {
-    console.log('Listening on port ' + port);
-    if (process.env.NODE_ENV === 'test') {
-      console.log('Running Tests...');
-      setTimeout(function () {
-        try {
-          runner.run();
-        } catch (error) {
-          console.log('Tests are not valid:', error);
-        }
-      }, 1500);
-    }
-  });
+const port = process.env.PORT || 3000;
 
-  // Handle server errors
-  server.on('error', function(error) {
-    if (error.code === 'EADDRINUSE') {
-      console.log(`Port ${port} is already in use. Tests will continue...`);
-      if (process.env.NODE_ENV === 'test') {
-        setTimeout(function() {
-          try {
-            runner.run();
-          } catch (error) {
-            console.log('Tests are not valid:', error);
-          }
-        }, 1500);
+//Start our server and tests!
+app.listen(port, function () {
+  console.log("Listening on port " + port);
+  if(process.env.NODE_ENV==='test') {
+    console.log('Running Tests...');
+    setTimeout(function () {
+      try {
+        runner.run();
+      } catch(e) {
+          console.log('Tests are not valid:');
+          console.error(e);
       }
-    } else {
-      console.error('Server error:', error);
-    }
-  });
-} else {
-  // In production, just export the app for serverless deployment
-  const port = process.env.PORT || 3000;
-  app.listen(port, function () {
-    console.log('Production server listening on port ' + port);
-  });
-}
+    }, 1500);
+  }
+});
 
-// Export the app instance for serverless deployment
-module.exports = app;
+module.exports = app; //for testing
